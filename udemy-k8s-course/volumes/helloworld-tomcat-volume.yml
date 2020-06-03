@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: helloworld-tomcat
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: helloworld-tomcat
+    spec:
+      containers:
+      - name: helloworld-tomcat
+        image: zshaik/simple-err:0.1
+        ports:
+        - name: tomcat-port
+          containerPort: 8080
+        volumeMounts:
+        - mountPath: /myvol
+          name: myvolume
+      volumes:
+      - name: myvolume
+        awsElasticBlockStore:
+          volumeID: vol-0daf99d04da20029b
