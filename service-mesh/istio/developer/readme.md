@@ -1,61 +1,54 @@
-# learn-istio
-Guide for learning istio
+# Developer guide for istio
 
-### installation
-- requres 4gb of ram and 2vCPUs
-- swapoff & untaint master node if single node cluster
-- check kubelet logs, calico status & node status
-[install istio](https://istio.io/docs/setup/getting-started/#download)
-delete kiali service & expose kiali as nodeport
-- kiali default creds is admin/admin
+Learn how to contribute to istio
 
-### istio operator crashloopbackoff
-[calico-problem](https://github.com/kubernetes-sigs/metrics-server/issues/375)
+## Table of Contents
 
-### installing canal
-[calico+flannel is canal](https://docs.projectcalico.org/getting-started/kubernetes/flannel/flannel)
+1. [IDE](#IDE)
+2. [Build-from-source](#Build-from-source)
+3. [Updating old version](#Updating-old-version)
+4. [Search for issues](#Search-for-issues)
 
-### install istio for calico
+### IDE
 
-### Overview
-- install k8s & calico cni
-- [install istio for calico](https://docs.projectcalico.org/getting-started/kubernetes/hardway/istio-integration)
-- or you may only need `istioctl` which is easy
+Clone the project to your gopath (%GOPATH%/src/github.com/kubernetes) & import on [goland](https://www.jetbrains.com/go/)
 
 ```bash
-istioctl manifest apply --set profile=demo
+file -> open -> kubectl
+file -> setting -> go -> index entire gopath
+go get -v all
+or
+GO111MODULES=off go get -v all
 ```
-- all issues were related to network, so check /etc/hosts & untaint master nodes (for local vms) & increase disk space to master node. Remove the fault node(drain) & put it back (uncordon later) but clean it (kubeadm reset)
-- [also, may need to clean up cni](https://github.com/kubernetes/kubernetes/issues/39557)
-- for me the main issue was fixing /etc/hosts with my ip address
+
+### Build from source
+
+build from the vm, enable folder sharing on vmware, as below,
 
 ```bash
-127.0.0.1 localhost
-192.168.110.129 ubuntu1 # I had 127.0.0.1 localhost
-
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
+sudo apt-get -y install open-vm-tools-desktop fuse && reboot
+ps aux | grep vm
+sudo mount -t fuse.vmhgfs-fuse .host:/ /mnt/hgfs -o allow_other
 ```
 
-### Expose services
-All of them are clusterIP exposed, so expose to nodePort and access it via nodeport example,
 ```bash
- k expose deployment grafana -n istio-system --type=NodePort --port=3000 --dry-run -oyaml > grafana.yml
+make gen-charts
+make istioctl
 ```
-then edit this yaml to change the service name.
-after than you can access on your host using the vm <ipaddress:nodeport>
-in my case, `http://192.168.110.129:32524` for grafana and `http://192.168.110.129:30028/kiali` for kiali, 
-for kiali, the creds are admin/admin, it will take a min or so to load, be patient.
 
-## cilium way
+target location will be `out/linux_amd64/` depending on os
 
-- install cilium 
-- [cilium-istio](https://docs.cilium.io/en/stable/gettingstarted/istio/)
-- mem for istio 4096
+Inorder to enable verbose logging, use
 
+```bash
+make istioctl VERBOSE=1
+```
 
+### Updating old version
 
+If you making a bug fix to prev version say, 1.5.4, you need to issue the PR
+to branch, `istio:release-1.5`
+
+### Search for issues
+
+Search for issue on github with lable `good-first' which is meant for newbies, join slack & istio community meetings

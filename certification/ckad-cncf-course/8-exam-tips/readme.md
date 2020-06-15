@@ -24,5 +24,3 @@ Copy pasting yamls from official docs can be time consuming, so use generators,
 ```bash
 kubectl run busybox --image=busybox:latest --rm -it --restart=Never --dry-run -o yaml > busybox.yaml
 ```
-
-

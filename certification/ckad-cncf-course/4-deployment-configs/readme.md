@@ -1,5 +1,7 @@
 # Deployment Configuration
+
 ## Table of Contents
+
 1. [Storage](#Volumes)
    1. [Volumes](#Volumes)
       1. [Access Modes](#Access-Modes)
@@ -25,11 +27,9 @@
 6. [Deployment Rollbacks](#Deployment-Rollbacks)
    1. [Example](#Example)
 
-
 ## Storage
 
-
-A __volume__ is a directory, possibly pre-populated, made available to containers in a Pod. The creation of the directory, the backend storage of the data and the contents depend on the volume type. 
+A __volume__ is a directory, possibly pre-populated, made available to containers in a Pod. The creation of the directory, the backend storage of the data and the contents depend on the volume type.
 
 An alpha feature to `v1.9` is the __Container Storage Interface (CSI)__ with the goal of an industry standard interface for container orchestration to allow access to arbitrary storage systems.
 
@@ -37,23 +37,23 @@ Currently, volume plugins are __in-tree__, meaning they are compiled and built w
 
 Should you want your storage lifetime to be distinct from a Pod, you can use Persistent Volumes. These allow for empty or pre-populated volumes to be claimed by a Pod using a Persistent Volume Claim, then outlive the Pod.
 
+### Volumes
 
-### Volumes 
-
-![](https://raw.githubusercontent.com/zillani/img/master/k8s-resources/volumes.jpg)
+![volumes](https://raw.githubusercontent.com/zillani/img/master/k8s-resources/volumes.jpg)
 
 Keeping acquired data or ingesting it into other containers is a common task, typically requiring the use of a Persistent Volume Claim (PVC).
-The same volume can be made available to multiple containers within a Pod, which can be a method of `container-to-container communication.` 
+The same volume can be made available to multiple containers within a Pod, which can be a method of `container-to-container communication.`
 A volume can be made available to multiple Pods, with each given an access mode to write. There is no concurrency checking, which means data corruption is probable, unless outside locking takes place
 
 A particular access mode is part of a Pod request. As a request, the user may be granted more, but not less access, though a direct match is attempted first. The cluster groups volumes with the same mode together, then sorts volumes by size, from smallest to largest. The claim is checked against each in that access mode group, until a volume of sufficient size matches. 
 
 #### Access Modes
 
-The three access modes are, 
-- __RWO (ReadWriteOnce)__ Allows read-write by a single node
-- __ROX (ReadOnlyMany)__ Allows read-only by multiple nodes 
-- __RWX (ReadWriteMany)__ Allows read-write by many nodes 
+The three access modes are,
+
+- __RWO(ReadWriteOnce)__ Allows read-write by a single node
+- __ROX(ReadOnlyMany)__ Allows read-only by multiple nodes
+- __RWX(ReadWriteMany)__ Allows read-write by many nodes
 
 #### Allocation Process
 
@@ -64,14 +64,14 @@ If a request for a particular StorageClass was not made, then the only parameter
 
 There are several types that you can use to define volumes,
 
-- __GCEpersistentDisk__ for GCE 
+- __GCEpersistentDisk__ for GCE
 - __awsElasticBlockStore__, for aws EBS disks
 - __emptyDir__ An empty directory that gets erased when the Pod dies, but is recreated when the container restarts. 
 - __hostPath__  Mounts a resource from the host node filesystem. The resource could be a directory, file socket, character, or block device. These resources must already exist on the host to be used.
-    - Types of hostPath 
-      - __DirectoryOrCreate__ 
+    - Types of hostPath
+      - __DirectoryOrCreate__
         If nothing exists at the given path, an empty directory will be created there as needed with permission set to 0755, having the same group and ownership with Kubelet.
-      - __FileOrCreate__ 
+      - __FileOrCreate__
         If nothing exists at the given path, an empty file will be created there as needed with permission set to 0644, having the same group and ownership with Kubelet.
 - __NFS (Network File System)__ Straightforward choices for multiple readers scenarios
 - __iSCSI (Internet Small Computer System Interface)__ Straightforward choices for multiple readers scenarios.
@@ -85,7 +85,8 @@ Besides the volume types we just mentioned, there are many other possible, with 
 ### Shared Volume Example
 
 The following YAML file creates a pod with two containers, both with access to a shared volume:
-```bash
+
+```yaml
 containers:
        - image: busybox
      volumeMounts:
@@ -99,30 +100,31 @@ containers:
      name: box
      volumes:
        - name: test
-       emptyDir: {} 
+       emptyDir: {}
 ```
 
 Now, let's try to create a file in the mountPath from one container & access it from another container,
 
 ```bash
-kubectl exec -ti busybox -c box -- touch /box/foobar 
+kubectl exec -ti busybox -c box -- touch /box/foobar
 kubectl exec -ti busybox -c busy -- ls /busy total 0
 foobar
 ```
 
 ### Persistence Volumes and Claims
 
-A __persistent volume (pv)__ is a storage abstraction used to retain data longer than the Pod using it. 
-Pods define a volume of type __persistentVolumeClaim (pvc)__ with various parameters for size and possibly the type of backend storage known as its `StorageClass`. The cluster then attaches the persistentVolume. 
+A __persistent volume (pv)__ is a storage abstraction used to retain data longer than the Pod using it.
+Pods define a volume of type __persistentVolumeClaim (pvc)__ with various parameters for size and possibly the type of backend storage known as its `StorageClass`. The cluster then attaches the persistentVolume.
 Kubernetes will dynamically use volumes that are available, irrespective of its storage type, allowing claims to any backend storage. 
-There are several phases to persistent storage: 
-Provisioning can be from pvs created in advance by the cluster administrator, or requested from a dynamic source, such as the cloud provider. 
+There are several phases to persistent storage:
+Provisioning can be from pvs created in advance by the cluster administrator, or requested from a dynamic source, such as the cloud provider.
 
-Binding occurs when a control loop on the master notices the PVC, containing an amount of storage, access request, and optionally, a particular StorageClass. The watcher locates a matching PV or waits for the StorageClass provisioner to create one. The pv must match at least the storage amount requested, but may provide more. 
+Binding occurs when a control loop on the master notices the PVC, containing an amount of storage, access request, and optionally, a particular StorageClass. The watcher locates a matching PV or waits for the StorageClass provisioner to create one. The pv must match at least the storage amount requested, but may provide more.
 The use phase begins when the bound volume is mounted for the Pod to use, which continues as long as the Pod requires. 
-Releasing happens when the Pod is done with the volume and an API request is sent, deleting the PVC. The volume remains in the state from when the claim is deleted until available to a new claim. The resident data remains depending on the persistentVolumeReclaimPolicy. 
+Releasing happens when the Pod is done with the volume and an API request is sent, deleting the PVC. The volume remains in the state from when the claim is deleted until available to a new claim. The resident data remains depending on the persistentVolumeReclaimPolicy.
 
 The reclaim phase has three options:
+
 - __Retain:__ Keeps the data intact, allowing for an administrator to handle the storage and data.
 - __Delete:__ Tells the volume plugin to delete the API object, as well as the storage behind it.
 - __Recycle:__ Runs an `rm -rf /mountpoint` and then makes it available to a new claim. With the stability of dynamic provisioning, the `Recycle` option is planned to be deprecated.
@@ -136,21 +138,22 @@ kubectl get pvc
 
 Consider below yaml file,
 
-```bash
-kind: PersistentVolume 
-apiVersion: v1 
-metadata: 
-    name: 10Gpv01 
+```yaml
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+    name: 10Gpv01
     labels:
-         type: local 
-spec: 
-    capacity: 
-        storage: 10Gi 
-    accessModes: 
-        - ReadWriteOnce 
-    hostPath: 
+         type: local
+spec:
+    capacity:
+        storage: 10Gi
+    accessModes:
+        - ReadWriteOnce
+    hostPath:
         path: "/somepath/data01"
 ```
+
 Each type will have it's own configuration settings. For example, an already created `Ceph` or `GCE Persistent Disk` would not need to be configured, but could be claimed from the provider.
 
 Persistent volumes are cluster-scoped, but persistent volume claims are namespace-scoped. An alpha feature since `v1.11`, this allows for static provisioning of Raw Block Volumes, which currently support the Fibre Channel plugin. There is a lot of development and change in this area, with plugins adding dynamic provisioning
@@ -159,13 +162,13 @@ Persistent volumes are cluster-scoped, but persistent volume claims are namespac
 
 With a persistent volume created in your cluster, you can then write a manifest for a claim and use that claim in your pod definition
 
-```bash
+```yaml
 kind: PersistentVolumeClaim
-apiVersion: v1 
-metadata: 
+apiVersion: v1
+metadata:
     name: myclaim
-spec: 
-    accessModes: 
+spec:
+    accessModes:
         - ReadWriteOnce
     resources:
       requests:
@@ -174,7 +177,7 @@ spec:
 
 Config in the Pod,
 
-```bash
+```yaml
 spec:
   containers:
 ....
@@ -211,20 +214,20 @@ volumeMounts:
 
 ### Dynamic Provisioning
 
-While handling volumes with a persistent volume definition and abstracting the storage provider using a claim is powerful, a cluster administrator still needs to create those volumes in the first place. 
-Starting with Kubernetes `v1.4`, __Dynamic Provisioning__ allowed for the cluster to request storage from an exterior, pre-configured source. API calls made by the appropriate plugin allow for a wide range of dynamic storage use. 
+While handling volumes with a persistent volume definition and abstracting the storage provider using a claim is powerful, a cluster administrator still needs to create those volumes in the first place.
+Starting with Kubernetes `v1.4`, __Dynamic Provisioning__ allowed for the cluster to request storage from an exterior, pre-configured source. API calls made by the appropriate plugin allow for a wide range of dynamic storage use.
 
 The __StorageClass__ API resource allows an administrator to define a persistent volume provisioner of a certain type, passing storage-specific parameters.
 
 With a StorageClass created, a user can request a claim, which the API Server fills via auto-provisioning. The resource will also be reclaimed as configured by the provider. AWS and GCE are common choices for dynamic storage, but other options exist, such as a `Ceph cluster` or `iSCSI`. Single, default class is possible via annotation.
 
-#### Storage class using GCE,
+#### Storage class using GCE
 
 ```bash
 apiVersion: storage.k8s.io/v1        # Recently became stable
 kind: StorageClass
 metadata:
-  name: fast                         
+  name: fast
 provisioner: kubernetes.io/gce-pd
 parameters:
   type: pd-ssd 
