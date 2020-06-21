@@ -1,22 +1,6 @@
 # Networking (11%)
 
-kubernetes.io > Documentation > Reference > kubectl CLI > [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
-
-kubernetes.io > Documentation > Concepts > Cluster Administration > [Cluster Networking](https://kubernetes.io/docs/concepts/cluster-administration/networking/)
-
-kubernetes.io > Documentation > Concepts > Services, Load Balancing, and Networking > [Service](https://kubernetes.io/docs/concepts/services-networking/service/)
-
-kubernetes.io > Documentation > Tasks > Access Applications in a Cluster > [Create an External Load Balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/)
-
-kubernetes.io > Documentation > Concepts > Services, Load Balancing, and Networking > [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)
-
-kubernetes.io > Documentation > Concepts > Services, Load Balancing, and Networking > [DNS for Services and Pods](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/)
-
-kubernetes.io > Documentation > Concepts > Cluster Administration > [Installing Addons](https://kubernetes.io/docs/concepts/cluster-administration/addons/)
-
-
-
-###  
+## Questions  
 
 ### Understand the Networking configuration of the cluster nodes
 
@@ -24,15 +8,14 @@ kubernetes.io > Documentation > Concepts > Cluster Administration > [Installing 
 <p>
 
 ```bash
-$ ip addr
-$ ip link
-$ ip link show ens3
-$ arp node01
-$ ip link show docker0 
-$ ip route show default
-$ netstat -nplt
-$ netstat -anp | grep etcd
-
+ip addr
+ip link
+ip link show ens3
+arp node01
+ip link show docker0
+ip route show default
+netstat -nplt
+netstat -anp | grep etcd
 ```
 
 </p>
@@ -43,35 +26,29 @@ $ netstat -anp | grep etcd
 <details><summary>show</summary>
 <p>
 
-
-
 ```bash
-$ ip netns add white
-$ ip netns
-$ ip netns exec white ip link
-$ ip -n red link
-$ ip netns exec white arp
-$ ip netns exec white route
-$ ip link set veth-white netns white
-$ ip -n white addr add 192.168.1.1 dev veth-white
-$ ip -n white link set veth-white up
-$ ip link add v-net-0 type bridge
-$ ip link set dev v-net-0 up
-$ ip link add veth-white type veth peer name veth-white-br
-$ ip link set veth-white netns white
-$ ip link set veth-white-br master v-net-0
-$ ip -n white addr add 192.168.1.1 dev veth-white
-$ ip -n white link set veth-white up
-$ docker network ls
-$ docker inspect <network ns>
+ip netns add white
+ip netns
+ip netns exec white ip link
+ip -n red link
+ip netns exec white arp
+ip netns exec white route
+ip link set veth-white netns white
+ip -n white addr add 192.168.1.1 dev veth-white
+ip -n white link set veth-white up
+ip link add v-net-0 type bridge
+ip link set dev v-net-0 up
+ip link add veth-white type veth peer name veth-white-br
+ip link set veth-white netns white
+ip link set veth-white-br master v-net-0
+ip -n white addr add 192.168.1.1 dev veth-white
+ip -n white link set veth-white up
+docker network ls
+docker inspect <network ns>
 
 ```
 
-
-
 ![POD Communication](https://github.com/stretchcloud/cka-lab-practice/blob/master/pod-networking.jpg)
-
-
 
 </p>
 </details>
@@ -81,23 +58,23 @@ $ docker inspect <network ns>
 <details><summary>show</summary>
 <p>
 
-```
-$ ps aux | grep kube-api
+```bash
+ps aux | grep kube-api
 
 --service-cluster-ip-range=10.0.0.0/24
 
-$ iptables -L -t net | grep <service name>
-$ cat /var/log/kube-proxy.log
-$ kubectl logs weave-net-cwpbj weave -n kube-system
+iptables -L -t net | grep <service name>
+cat /var/log/kube-proxy.log
+kubectl logs weave-net-cwpbj weave -n kube-system
+```
 
 check for ipalloc-range:
 
-$ kubectl logs <kube-proxy-pod> -n kube-system
-
-Check for "Flag proxy-mode="" unknown, assuming iptables proxy"
+```bash
+kubectl logs <kube-proxy-pod> -n kube-system
 ```
 
-
+Check for "Flag proxy-mode="" unknown, assuming iptables proxy"
 
 </p>
 </details>
@@ -108,8 +85,10 @@ Check for "Flag proxy-mode="" unknown, assuming iptables proxy"
 <p>
 
 ```bash
-$ cat influxdbpod.yaml
+cat influxdbpod.yaml
+```
 
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -123,8 +102,11 @@ spec:
        ports:
          - containerPort: 8086
 
-$ cat influxdbservice.yaml
+```bash
+cat influxdbservice.yaml
+```
 
+```yaml
 kind: Service
 apiVersion: v1
 metadata:
@@ -138,8 +120,6 @@ spec:
 
 ```
 
-
-
 </p>
 </details>
 
@@ -149,10 +129,10 @@ spec:
 <p>
 
 ```bash
-$ cat ingress-controller.yaml
+cat ingress-controller.yaml
+```
 
----
-
+```yaml
 kind: Namespace
 apiVersion: v1
 metadata:
@@ -374,7 +354,7 @@ subjects:
     namespace: ingress-space
 
 
-$ cat ingress-resource.yaml
+cat ingress-resource.yaml
 
 ---
 apiVersion: extensions/v1beta1
@@ -397,22 +377,19 @@ spec:
         backend:
           serviceName: video-service
           servicePort: 8080
-
-$ kubectl get ingress
-$ kubectl describe ingress --namespace app-space
-$ kubectl create ns ingress-space
-$ kubectl create configmap nginx-configuration --namespace ingress-space
-$ kubectl create serviceaccount ingress-serviceaccount --namespace ingress-space
-$ kubectl get roles,rolebindings --namespace ingress-space
-$ kubectl expose deployment -n ingress-space ingress-controller --type=NodePort --port=80 --name=ingress --dry-run -o yaml > ingress.yaml
-
 ```
 
-
+```bash
+kubectl get ingress
+kubectl describe ingress --namespace app-space
+kubectl create ns ingress-space
+kubectl create configmap nginx-configuration --namespace ingress-space
+kubectl create serviceaccount ingress-serviceaccount --namespace ingress-space
+kubectl get roles,rolebindings --namespace ingress-space
+kubectl expose deployment -n ingress-space ingress-controller --type=NodePort --port=80 --name=ingress --dry-run -o yaml > ingress.yaml
+```
 
 ![Ingress Flow](https://github.com/stretchcloud/cka-lab-practice/blob/master/Ingress-Flow.png)
-
-
 
 </p>
 </details>
@@ -423,19 +400,19 @@ $ kubectl expose deployment -n ingress-space ingress-controller --type=NodePort 
 <p>
 
 ```bash
-$ curl http://web-service.apps.svc.cluster.local
-$ curl http://10-10-10-5.apps.pod.cluster.local
-$ cat /etc/coredns/Corefile
-$ kubectl get configmap -n kube-system
-$ kubectl get service -n kube-system
-$ ps aux | grep coredns
+curl http://web-service.apps.svc.cluster.local
+curl http://10-10-10-5.apps.pod.cluster.local
+cat /etc/coredns/Corefile
+kubectl get configmap -n kube-system
+kubectl get service -n kube-system
+ps aux | grep coredns
 
 -conf /etc/coredns/Corefile
 
-$ kubectl exec <coredns pod> -n kube-system ps
-$ kubectl describe configmap coredns -n kube-system
-$ kubectl set env deployment/webapp DB_Host=mysql.payroll
-$ kubectl exec -it hr nslookup mysql.payroll > /root/nslookup.out
+kubectl exec <coredns pod> -n kube-system ps
+kubectl describe configmap coredns -n kube-system
+kubectl set env deployment/webapp DB_Host=mysql.payroll
+kubectl exec -it hr nslookup mysql.payroll > /root/nslookup.out
 
 ```
 
@@ -448,40 +425,39 @@ $ kubectl exec -it hr nslookup mysql.payroll > /root/nslookup.out
 <p>
 
 ```bash
-$ cat /etc/system/system.d/kubelet.service
+cat /etc/system/system.d/kubelet.service
 
 --network-plugin=cni \\
 --cni-bin-dir=/opt/cni/bin \\
 --cni-conf-dir=/etc/cni/net.d \\
 
-$ ps -aux | grep -i kubelet
-$ cat /etc/cni/net.d/net-script.conf
+ps -aux | grep -i kubelet
+cat /etc/cni/net.d/net-script.conf
 
 {
-	"cniversion": "0.2.0",
-	"name": "mynet",
-	"type": "net-script",
-	"bridge": "cni0",
-	"isGateway": true,
-	"ipMasq": true,
-	"ipam": {
-		"type": "host-local",
-		"subnet": "10.10.0.0/16",
-		"routes": [
-		{
-			"dst": "0.0.0.0/0"
-		}
-		]
-	}
+  "cniversion": "0.2.0",
+  "name": "mynet",
+  "type": "net-script",
+  "bridge": "cni0",
+  "isGateway": true,
+  "ipMasq": true,
+  "ipam": {
+     "type": "host-local",
+     "subnet": "10.10.0.0/16",
+     "routes": [
+     {
+       "dst": "0.0.0.0/0"
+     }
+    ]
+  }
 }
 
-$ kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 
 Weave CNI Range -> 10.32.0.0/12 (10.32.0.1 - 10.47.255.254)
 
-$ ip addr show weave
+ip addr show weave
 ```
 
 </p>
 </details>
-

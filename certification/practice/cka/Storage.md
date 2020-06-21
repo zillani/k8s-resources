@@ -1,16 +1,6 @@
 # Storage (7%)
 
-kubernetes.io > Documentation > Reference > kubectl CLI > [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
-
-kubernetes.io > Documentation > Concepts > Storage > [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/)
-
-kubernetes.io > Documentation > Concepts > Storage > [Types of Volumes](https://kubernetes.io/docs/concepts/storage/volumes/#types-of-volumes)
-
-kubernetes.io > Documentation > Concepts > Storage > [Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
-
-kubernetes.io > Documentation > Concepts > Storage > [Persistent Volume Claims](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-
-
+## Questions
 
 ### Understand persistent volumes and know how to create them
 
@@ -18,11 +8,13 @@ kubernetes.io > Documentation > Concepts > Storage > [Persistent Volume Claims](
 <p>
 
 ```bash
-$ cat persist-pod-volume.yaml
+cat persist-pod-volume.yaml
+```
 
+```yaml
 apiVersion: v1
 kind: Pod
-metadata: 
+metadata:
   name: persistent-pod
 spec:
   containers:
@@ -33,30 +25,33 @@ spec:
     volumeMounts:
     - mountPath: /opt
       name: data-volume
-      
   volumes:
   - name: data-volume
     hostPath:
       path: /data
       type: Directory
-      
+```
 
-$ cat persistent-volume.yaml
+```bash
+cat persistent-volume.yaml
+```
 
+```yaml
 apiVersion: v1
 kind: PersistentVolume
-metadata: 
+metadata:
   name: pv-vol1
-spec: 
+spec:
   accessModes:
      - ReadWriteOnce
   capacity:
     storage: 1Gi
   hostPath:
     path: /tmp/data
-    
-$ kubectl get persistentvolumes
+```
 
+```bash
+kubectl get persistentvolumes
 ```
 
 </p>
@@ -74,8 +69,6 @@ ReadWriteMany – the volume can be mounted as read-write by many nodes
 
 ```
 
-
-
 </p>
 </details>
 
@@ -84,36 +77,42 @@ ReadWriteMany – the volume can be mounted as read-write by many nodes
 <details><summary>show</summary>
 <p>
 
+```bash
+cat pvc.yaml
 ```
-$ cat pvc.yaml
 
+```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: myclaim
 spec:
-  accessModes: 
+  accessModes:
   - ReadWriteOnce
-  	persistentVolumeReclaimPolicy: Retain
+    persistentVolumeReclaimPolicy: Retain
   
   resources:
     requests:
       storage: 500Mi
+```
 
 Persistent Volume Reclaim Policies:
 
 Retain: No other claims can claim this volume
-Delete: Delete the volume 
-Recycle: Scrap the data and make the volume available again 
+Delete: Delete the volume
+Recycle: Scrap the data and make the volume available again
 
-$ kubectl get persistentvolumeclaim
-$ kubectl delete persistentvolumeclaim myclaim
+```bash
+kubectl get persistentvolumeclaim
+kubectl delete persistentvolumeclaim myclaim
 
-$ cat pvc-claim-pod.yaml
+cat pvc-claim-pod.yaml
+```
 
+```yaml
 apiVersion: v1
 kind: Pod
-metadata: 
+metadata:
   name: webapp
 spec:
   containers:
@@ -132,70 +131,55 @@ spec:
 
 ```
 
-
-
 </p>
 </details>
-
-
 
 ### Understand Kubernetes storage objects
 
 <details><summary>show</summary>
 <p>
 
-```
 Kubernetes supports several types of Volumes:
 
-    awsElasticBlockStore
-    azureDisk
-    azureFile
-    cephfs
-    cinder
-    configMap
-    csi
-    downwardAPI
-    emptyDir
-    fc (fibre channel)
-    flexVolume
-    flocker
-    gcePersistentDisk
-    gitRepo (deprecated)
-    glusterfs
-    hostPath
-    iscsi
-    local
-    nfs
-    persistentVolumeClaim
-    projected
-    portworxVolume
-    quobyte
-    rbd
-    scaleIO
-    secret
-    storageos
-    vsphereVolume
-
-```
-
-
+- awsElasticBlockStore
+- azureDisk
+- azureFile
+- cephfs
+- cinder
+- configMap
+- csi
+- downwardAPI
+- emptyDir
+- fc (fibre channel)
+- flexVolume
+- flocker
+- gcePersistentDisk
+- gitRepo (deprecated)
+- glusterfs
+- hostPath
+- iscsi
+- local
+- nfs
+- persistentVolumeClaim
+- projected
+- portworxVolume
+- quobyte
+- rbd
+- scaleIO
+- secret
+- storageos
+- vsphereVolume
 
 </p>
 </details>
-
-
 
 ### Know how to configure applications with persistent storage
 
 <details><summary>show</summary>
 <p>
 
-```
 Create a persistent volume claim
 Use persistent volume claim in pod
-```
-
-
 
 </p>
 </details>
