@@ -24,13 +24,14 @@ Dealing with stateful application in k8s in not easy, that is why we have operat
 
 ### Operator
 
+An Operator is a way to package, run, and maintain a Kubernetes application. A Kubernetes application is not only deployed on Kubernetes, it is designed to use and to operate in concert with Kubernetes facilities and tools.
+
+An Operator builds on Kubernetes abstractions to automate the entire lifecycle of the
+software it manages. Because they extend Kubernetes, Operators provide applicationspecific automation in terms familiar to a large and growing community. For application programmers, Operators make it easier to deploy and run the foundation services on which their apps depend. For infrastructure engineers and vendors, Operators provide a consistent way to distribute software on Kubernetes clusters and reduce support burdens by identifying and correcting application problems before the pager beeps
+
 ### Go vs Helm/Ansible
 
-While the Helm and Ansible Operators can be created quickly and easily, their functionality is ultimately limited
-by those underlying technologies. Advanced use cases, such as those that involve dynamically reacting to specific
-changes in the application or the cluster as a whole, require a more flexible solution. The Operator SDK provides
-that flexibility by making it easy for developers to use the Go programming language, including its ecosystem of
-external libraries, in their Operators
+While the Helm and Ansible Operators can be created quickly and easily, their functionality is ultimately limited by those underlying technologies. Advanced use cases, such as those that involve dynamically reacting to specific changes in the application or the cluster as a whole, require a more flexible solution. The Operator SDK provides that flexibility by making it easy for developers to use the Go programming language, including its ecosystem of external libraries, in their Operators
 
 Below are high level steps involved in creating operators,
 

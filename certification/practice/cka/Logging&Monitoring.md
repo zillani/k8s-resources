@@ -10,18 +10,16 @@ kubernetes.io > Documentation > Tasks > Configure Pods & Containers > [Configure
 
 kubernetes.io > Documentation > Reference > [logs](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#logs)
 
-### 
-
-### Understand how to monitor all cluster components
+## Understand how to monitor all cluster components
 
 <details><summary>show</summary>
 <p>
 
 ```bash
-$ git clone https://github.com/kubernetes-incubator/metrics-server.git
-$ kubectl creare -f deploy/1.8+/
-$ kubectl top node
-$ kubectl top pod
+git clone https://github.com/kubernetes-incubator/metrics-server.git
+kubectl creare -f deploy/1.8+/
+kubectl top node
+kubectl top pod
 ```
 
 </p>
@@ -35,7 +33,7 @@ $ kubectl top pod
 Create a YAML:
 
 ```bash
-$ cat exec-liveness.yaml
+cat exec-liveness.yaml
 ```
 
 ```yaml
@@ -62,8 +60,8 @@ spec:
       periodSeconds: 5
 ```
 
-```bash
-$ cat exec-readyness.yaml
+```yaml
+cat exec-readyness.yaml
 
 apiVersion: v1
 kind: Pod
@@ -96,7 +94,8 @@ spec:
 <details><summary>show</summary>
 <p>
 
-```
+```bash
+
 containerised components log under /var/log
 
 Master (/var/log or /var/log/containers)
@@ -109,8 +108,6 @@ Worker Nodes (/var/log or /var/log/containers)
                 /var/log/kube-proxy.log – Kube Proxy, responsible for service load balancing
 ```
 
-
-
 </p>
 </details>
 
@@ -120,15 +117,14 @@ Worker Nodes (/var/log or /var/log/containers)
 <p>
 
 
-
 ```bash
-$ docker run kodecloud/event-simulator
-$ docker run -d kodecloud/event-simulator
-$ docker logs -f ecf
+docker run kodecloud/event-simulator
+docker run -d kodecloud/event-simulator
+docker logs -f ecf
 ```
 
-```bash
-$ cat event-simulator.yaml
+```yaml
+cat event-simulator.yaml
 
 apiVersion: v1
 kind: Pod
@@ -140,13 +136,14 @@ spec:
     name: event-simulator
   - image: nginx
     name: nginx
-    
-$ kubectl create -f event-simulator.yaml
-$ kubectl logs -f event-pod
-$ kubectl logs -f event-pod event-simulator
+```
+
+```bash
+kubectl create -f event-simulator.yaml
+kubectl logs -f event-pod
+kubectl logs -f event-pod event-simulator
 
 ```
 
 </p>
 </details>
-
