@@ -2,6 +2,42 @@
 
 ## Scheduling
 
+
+### Create 3 pods with names nginx1,nginx2,nginx3. All of them should have the label app=v1
+
+<details><summary>show</summary>
+<p>
+
+```bash
+kubectl run nginx1 --image=nginx --restart=Never --labels=app=v1
+kubectl run nginx2 --image=nginx --restart=Never --labels=app=v1
+kubectl run nginx3 --image=nginx --restart=Never --labels=app=v1
+```
+
+</p>
+</details
+
+### Create a deployment with image nginx:1.7.8, called nginx, having 2 replicas, defining port 80 as the port that this container exposes (don't create a service for this deployment)
+
+<details><summary>show</summary>
+<p>
+
+```bash
+kubectl run nginx --image=nginx:1.7.8 --replicas=2 --port=80
+```
+
+**However**, `kubectl run` for Deployments is Deprecated and will be removed in a future version. What you can do is:
+
+```bash
+kubectl create deployment nginx  --image=nginx:1.7.8  --dry-run -o yaml > deploy.yaml
+vi deploy.yaml
+# change the replicas field from 1 to 2
+# add this section to the container spec and save the deploy.yaml file
+# ports:
+#   - containerPort: 80
+kubectl apply -f deploy.yaml
+```
+
 ### Use label selectors to schedule Pods
 
 <details><summary>show</summary>
