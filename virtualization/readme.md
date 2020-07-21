@@ -45,3 +45,46 @@ to use ipv4. This is strange. remove docker for desktop (workaround, but not rec
 
 Docker for Desktop is an excellent option, it comes with single node k8s cluster which can be 
 enabled while starting docker. No complex configurations.
+
+## Vmware
+
+I've put the VM on NAT & below is config for my master. 
+
+vim /etc/netplan/<whatever>.yml
+
+netplan --debug apply
+
+```bash
+network:
+    ethernets:
+        ens33:
+          addresses:
+            - 192.168.110.14/24
+          gateway4: 192.168.110.2
+          nameservers:
+            addresses: [8.8.8.8,8.8.4.4]
+          dhcp4: false
+        ens38:
+          dhcp4: true
+    version: 2
+    renderer: networkd
+```
+
+Below is for my worker node, 
+
+```bash
+network:
+    ethernets:
+        ens33:
+          addresses:
+            - 192.168.110.15/24
+          gateway4: 192.168.110.2
+          nameservers:
+            addresses: [8.8.8.8,8.8.4.4]
+          dhcp4: false
+        ens38:
+          dhcp4: true
+    version: 2
+    renderer: networkd
+```
+
