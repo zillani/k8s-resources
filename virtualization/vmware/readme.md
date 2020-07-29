@@ -87,4 +87,32 @@ network:
     version: 2
     renderer: networkd
 ```
+Below are n/w adapters on my host (windows),
 
+```bash
+Ethernet adapter VirtualBox Host-Only Network #2:
+
+   Connection-specific DNS Suffix  . :
+   Link-local IPv6 Address . . . . . : fe80::fd34:801e:8eff:b2e4%10
+   IPv4 Address. . . . . . . . . . . : 192.168.99.1
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . :
+
+Ethernet adapter Ethernet 2:
+
+   Connection-specific DNS Suffix  . :
+   Link-local IPv6 Address . . . . . : fe80::84cf:26ef:400f:84e3%22
+   IPv4 Address. . . . . . . . . . . : 192.168.56.1
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . :
+
+Ethernet adapter VMware Network Adapter VMnet8:
+
+   Connection-specific DNS Suffix  . :
+   Link-local IPv6 Address . . . . . : fe80::9d63:4df7:2d2f:c2e3%2
+   IPv4 Address. . . . . . . . . . . : 192.168.110.1
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . :
+```
+
+Make sure your virtual network editor vmnet1 is on bridged connection and vmnet8 is on nat
